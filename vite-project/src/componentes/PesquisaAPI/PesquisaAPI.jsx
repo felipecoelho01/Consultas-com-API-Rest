@@ -5,37 +5,99 @@ import { FaWind } from "react-icons/fa";
 import { FaDroplet } from "react-icons/fa6";
 import { FaRegEye } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { Snackbar, Alert, Button } from "@mui/material";
 
 
 function PesquisaAPI() {
     const [isVisible, setVisible] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [textError, setTextError] = useState('');
+    const [valueCity, setValueCity] = useState('');
+    const txtVisibility = document.querySelector("#txtVisibility");
+    const txtHumidity = document.querySelector("#txtHumidity");
+    const txtWind = document.querySelector("#txtWind");
+    const apiKey = import.meta.env.VITE_API_URL;
 
+    const handleChange = (event) => {
+      setValueCity(event.target.value);
+    };
 
-  const apiKey = import.meta.env.VITE_API_URL;
+    const handleClose = (event, reason) => {
+      if (reason === "clickaway") {
+        return;
+      }
+      setOpen(false); // Fecha o alerta
+    };
 
   const getWeatherData = async (city) => {
-    const apiWeatherURL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=pt_br`;
+    try{
+      const apiWeatherURL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=pt_br`;
 
-    const res = await fetch(apiWeatherURL);
-    const data = await res.json();
+      const res = await fetch(apiWeatherURL);
+      const data = await res.json();
+  
+      return data;
+    }catch (error){
+      console.log(error);
+      setOpen(true);
+      setTextError('Erro ao encontrar a cidade.');
+    }
+    
+  };
 
-    return data;
+  const showWeatherData = async (city) => {
+    setVisible(!isVisible)
+console.log("ver " + isVisible);
+    if(city === ''){
+      setOpen(true);
+      setTextError('Digite alguma cidade');
+        return;
+    }
+  
+    const data = await getWeatherData(city);
+  
+    if (data.cod === "404") {
+      return;
+    }
+  
+    console.log("API: " + data);
+    
+    // cityElement.innerText = data.name;
+    // tempElement.innerText = parseInt(data.main.temp);
+    // descElement.innerText = data.weather[0].description;
+    // weatherIconElement.setAttribute(
+    //   "src",
+    //   `http://openweathermap.org/img/wn/${data.weather[0].icon}.png`
+    // );
+    // countryElement.setAttribute("src", apiCountryURL + data.sys.country);
+    // txtHumidity.innerText = `${data.main.humidity}%`;
+    // txtWind.innerText = `${data.wind.speed}km/h`;
+  
+    // // Change bg image
+    // document.body.style.backgroundImage = `url("${apiUnsplash + city}")`;
+  if(isVisible === false){
+    setVisible(true)
+    console.log("ver2 " + isVisible);
+  }
+    // weatherContainer.classList.remove("hide");
   };
 
   return (
     <>
-      <div>
+      <div className="text-center">
         <h2 className="mb-4 text-xl">Veja o clima de uma cidade:</h2>
         <input
           type="text"
           className="p-3 border-0 flex-1 rounded-sm bg-amber-50"
+          onChange={handleChange}
         ></input>
         <motion.button className="p-3 ml-8 bg-[#8dd0f5] text-black border-0 cursor-pointer rounded-sm"
-        onClick={() => setVisible(!isVisible)} layout>
+        onClick={() => showWeatherData(valueCity)} layout>
           <FaSearch></FaSearch>
         </motion.button>
       </div>
       <AnimatePresence mode="popLayout">
+        {console.log("pqp: " + isVisible)}
       {isVisible && (<motion.div key="weatherBox"
       className="border-t-3 border-t-white mt-6 pt-6 text-center"
       initial={{
@@ -81,6 +143,16 @@ function PesquisaAPI() {
         </div>
       </motion.div>)}
       </AnimatePresence>
+      <Snackbar
+        open={open}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }} 
+      >
+        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+          {textError}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
