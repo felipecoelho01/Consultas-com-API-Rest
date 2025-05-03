@@ -42,13 +42,13 @@ function PesquisaAPI() {
       setOpen(true);
       setTextError('Erro ao encontrar a cidade.');
     }
-    
   };
 
   const showWeatherData = async (city) => {
-    setVisible(!isVisible)
-console.log("ver " + isVisible);
+    
+
     if(city === ''){
+      setVisible(false);
       setOpen(true);
       setTextError('Digite alguma cidade');
         return;
@@ -61,7 +61,7 @@ console.log("ver " + isVisible);
     }
   
     console.log("API: " + data);
-    
+    setVisible(true);
     // cityElement.innerText = data.name;
     // tempElement.innerText = parseInt(data.main.temp);
     // descElement.innerText = data.weather[0].description;
@@ -75,10 +75,6 @@ console.log("ver " + isVisible);
   
     // // Change bg image
     // document.body.style.backgroundImage = `url("${apiUnsplash + city}")`;
-  if(isVisible === false){
-    setVisible(true)
-    console.log("ver2 " + isVisible);
-  }
     // weatherContainer.classList.remove("hide");
   };
 
@@ -91,35 +87,14 @@ console.log("ver " + isVisible);
           className="p-3 border-0 flex-1 rounded-sm bg-amber-50"
           onChange={handleChange}
         ></input>
-        <motion.button className="p-3 ml-8 bg-[#8dd0f5] text-black border-0 cursor-pointer rounded-sm"
+        <button className="p-3 ml-8 bg-[#8dd0f5] text-black border-0 cursor-pointer rounded-sm"
         onClick={() => showWeatherData(valueCity)} layout>
           <FaSearch></FaSearch>
-        </motion.button>
+        </button>
       </div>
-      <AnimatePresence mode="popLayout">
-        {console.log("pqp: " + isVisible)}
-      {isVisible && (<motion.div key="weatherBox"
+      {isVisible && (<div key="weatherBox"
       className="border-t-3 border-t-white mt-6 pt-6 text-center"
-      initial={{
-        rotate: "0deg",
-        scale: 0,
-        y: 0,
-      }}
-      animate={{
-        rotate: "360deg",
-        scale: 1,
-        y: [0, 150, -150, -150, 0],
-      }}
-      exit={{
-        rotate: "0deg",
-        scale: 0,
-        y: 0,
-      }}
-      transition={{
-        duration: 1,
-        ease: "backInOut",
-        times: [0, 0.25, 0.5, 0.85, 1],
-      }}>
+      >
         <h2 className="ml-2.5 text-3xl text-white">25 C°</h2>
         <h2 className="flex justify-center place-items-center mb-2.5 text-2xl text-white">
           <TiLocationOutline></TiLocationOutline>Tokyo
@@ -141,8 +116,7 @@ console.log("ver " + isVisible);
             <span id="txtVisibility">10 km</span>
           </div>
         </div>
-      </motion.div>)}
-      </AnimatePresence>
+      </div>)}
       <Snackbar
         open={open}
         autoHideDuration={3000}
