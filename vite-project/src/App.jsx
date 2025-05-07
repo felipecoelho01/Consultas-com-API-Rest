@@ -1,6 +1,7 @@
 import React from "react";
 import PesquisaAPI from "./componentes/PesquisaAPI/PesquisaAPI";
 
+
 const App = () => {
 
   return (
